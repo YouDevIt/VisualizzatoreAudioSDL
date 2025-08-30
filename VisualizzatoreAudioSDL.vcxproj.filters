@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="scr\main.c">
+    <ClCompile Include="src\main.c">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
