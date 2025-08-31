@@ -27,6 +27,22 @@ const char* waveform_names[] = {
     "Sine", "Square", "Triangle", "Sawtooth"
 };
 
+typedef double(*wave_function_t)(double phase);
+
+double quad_wave(double phase){
+    return (fmod(phase, TWO_PI) < PI) ? 1.0 : -1.0;
+}
+
+double trig_wave(double phase){
+    return fabs((fmod(phase, TWO_PI) / PI) - 1.0) * 2.0 - 1.0;
+}
+
+double sawtooth_wave(double phase){
+    return (fmod(phase, TWO_PI) / PI) - 1.0;
+}
+
+const wave_function_t wave_function[] = {quad_wave, trig_wave,sawtooth_wave,sin};
+
 // Callback audio
 void audio_callback(void* userdata, Uint8* stream, int len) {
     Sint16* buffer = (Sint16*)stream;
@@ -36,12 +52,7 @@ void audio_callback(void* userdata, Uint8* stream, int len) {
     for (int i = 0; i < samples; i++) {
         double value;
 
-        switch (waveform_type) {
-            case 1: value = (fmod(phase, TWO_PI) < PI) ? 1.0 : -1.0; break;
-            case 2: value = fabs((fmod(phase, TWO_PI) / PI) - 1.0) * 2.0 - 1.0; break;
-            case 3: value = (fmod(phase, TWO_PI) / PI) - 1.0; break;
-            default: value = sin(phase); break;
-        }
+        wave_function[waveform_type % 4](phase);
 
         Sint16 sample = (Sint16)(value * amplitude);
         buffer[i * 2] = sample;
